@@ -2,7 +2,7 @@ import os
 import mmap
 import urllib.request
 import xml.etree.ElementTree as ET
-
+import ssl
 from other.binreader import read_int8
 
 RESULT_DIR = "result"
@@ -14,11 +14,16 @@ CONTENT_URL = "https://fifa23.content.easports.com/fifa/fltOnlineAssets/23DF3AC5
 ROSTERUPDATE_XML = "rosterupdate.xml"
 FIFA = "23"
 
-
+# Disabled SSL verification to overcome [SSL: CERTIFICATE_VERIFY_FAILED] 
 def download(fpath, url):
+    # Create an SSL context with verification disabled
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False  # Disable hostname verification
+    ssl_context.verify_mode = ssl.CERT_NONE  # Disable certificate verification
+
     print("Download: {}".format(url))
     with open(fpath, "wb") as f:
-        response = urllib.request.urlopen(url)
+        response = urllib.request.urlopen(url, context=ssl_context)
         f.write(response.read())
 
 
